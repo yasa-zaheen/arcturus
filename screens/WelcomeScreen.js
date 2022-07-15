@@ -2,35 +2,44 @@
 import React from "react";
 
 // React-native
-import { StyleSheet, Text, View, Button } from "react-native";
+import { StyleSheet, Text, View, Platform } from "react-native";
 
 // Expo
 import * as WebBrowser from "expo-web-browser";
-import { ResponseType } from "expo-auth-session";
 import * as Google from "expo-auth-session/providers/google";
+import * as SecureStore from "expo-secure-store";
 
 // Firebase
 import firebase from "firebase";
+import { auth } from "../firebase";
 
 // Components
 import SolidButton from "../components/SolidButton";
 
 WebBrowser.maybeCompleteAuthSession();
 
-const WelcomeScreen = () => {
+const WelcomeScreen = ({ navigation }) => {
   const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
     clientId:
       "270600795310-1948j8khll0gnkl7kki5jom6p4ut5l4u.apps.googleusercontent.com",
   });
 
+  // SecureStore.deleteItemAsync("auth-credentials");
+
   React.useEffect(() => {
     if (response?.type === "success") {
       const { id_token } = response.params;
 
-      const auth = firebase.auth();
       const provider = new firebase.auth.GoogleAuthProvider();
       const credential = provider.credential(id_token);
       auth.signInWithCredential(credential);
+
+      // Storing the auth on the device
+      if (Platform.OS !== "web") {
+        SecureStore.setItemAsync("auth-credentials", JSON.stringify(id_token));
+      }
+
+      navigation.navigate("Username");
     }
   }, [response]);
 
@@ -59,6 +68,7 @@ const styles = StyleSheet.create({
     flex: 1,
     display: "flex",
     justifyContent: "center",
+    backgroundColor: "#ffffff",
   },
   header: {
     fontSize: 35,
