@@ -4,10 +4,16 @@ import React from "react";
 // React-native
 import { StyleSheet, Text, TextInput, View } from "react-native";
 
-const Input = ({ placeholder }) => {
+const Input = ({ placeholder, value, onChangeText, autoCapitalize }) => {
   return (
     <View style={styles.container}>
-      <TextInput placeholder={placeholder} clearButtonMode="always" />
+      <TextInput
+        placeholder={placeholder}
+        value={value}
+        onChangeText={onChangeText}
+        clearButtonMode="always"
+        autoCapitalize={autoCapitalize}
+      />
     </View>
   );
 };
